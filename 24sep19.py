@@ -1,14 +1,7 @@
 # 24/9/19 playing around with web access in python
 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import urllib
-from bs4 import BeautifulSoup
 import re
-import shlex
-import csv
 
 # a class for quantities with error values, initialised with all three values
 class quantity:
@@ -121,9 +114,6 @@ class exoplanet:
 
 # access 1st database and read the data from the csv file
 csv_raw = urllib.request.urlopen('http://www.exoplanet.eu/catalog/csv')
-
-#data_frame = pd.DataFrame(csv_raw)
-#print(data_frame)
 
 # convert the web file to string and split into rows (each row still a csv)
 csv_str = str(csv_raw.read())
@@ -239,7 +229,8 @@ for i in range(len(rows) - 1):
     exoplanet_array[i].star_detected_disc = columns[95]
     exoplanet_array[i].star_magnetic_field = columns[96]
     exoplanet_array[i].star_alternate_names = columns[97]
-    
+
+# for testing
 for i in range(len(exoplanet_array)):
     x = exoplanet_array[i].star_alternate_names
     if x != "": print(x)
