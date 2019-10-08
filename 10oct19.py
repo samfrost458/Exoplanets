@@ -29,6 +29,6 @@ x = rank
 y = metric
 
 plt.scatter(x, y)
-plt.xlabel(x)
-plt.ylabel(y)
+plt.xlabel('')
+plt.ylabel('')
 plt.show()
