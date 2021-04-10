@@ -1,0 +1,60 @@
+<!--Base html template-->
+
+<html>
+
+	<head>
+		<!--title in tab bar-->
+		<title>Spearnet Exoplanet Database</title>
+		
+		<!--styling-->
+		<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'style.css') }}">
+
+		<!--table scripts-->
+		{% block tableScripts %}
+		{% endblock %}
+	</head>
+	
+	<body>
+		<!--animated stars in the background (from css)-->
+		<div id='stars'></div>
+		<div id='stars2'></div>
+		<div id='stars3'></div>
+
+		<div class="container space-around">
+			<!--links to each page-->
+			<div><a href="{{ url_for('home') }}">Home</a></div>
+			<div><a href="{{ url_for('teleinput') }}">Input your own telescope</a></div>
+			<div><a href="{{ url_for('graph')  }}">Graph plotter</a></div>
+			<div><a href="{{ url_for('telelist') }}">List of default telescopes</a></div>
+			<div><a href="{{ url_for('about') }}">About</a></div>
+		</div>
+		<hr>
+		
+		<!--graph plotter-->
+		{% block graph %}
+		{% endblock %}
+
+		<!--user input for telescope-->
+		{% block teleinput %}
+		{% endblock %}
+
+		<!--flash messages-->
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				{% for message in messages %}
+				{{ message }}
+				{% endfor %}
+			{% endif %}
+		{% endwith %}
+		
+		<!--table-->
+		{% block table %}
+		{% endblock %}
+		
+		<!--about section-->
+		{% block about %}
+		{% endblock %}
+	</body>
+	
+</html>

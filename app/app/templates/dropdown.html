@@ -1,0 +1,20 @@
+{% extends "table.html" %}
+
+<!--Menu for user to select a default telescope-->
+
+{% block teleinput %}
+	{% if home %}
+	<h1>Select a telescope</h1>
+	{% else %}
+	<h1>Select another telescope</h1>
+	{% endif %}
+	
+	<form action="" method="post" novalidate>
+		{{ form.hidden_tag() }}
+
+		<!--dropdown menu to select telescope-->
+		<p>{{ form.teleName() }}</p>
+		
+		<p>{{ form.submit() }}</p>
+	</form>
+{% endblock %}

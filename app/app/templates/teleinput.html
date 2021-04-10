@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+<!--Page for user to input a custom telescope-->
+
+{% block teleinput %}
+	<div class="centeralign">Custom telescope input:</div>
+	<form action="" method="post" novalidate>
+		{{ form.hidden_tag() }}
+		
+		Telescope properties:
+		{% for prop in property_list %}
+            {% if prop != 'name' %}
+                {{ form[prop] }}
+                {% for error in form[prop].errors %}
+				<span class="error">[{{ error }}]</span>
+				{% endfor %}
+			{% endif %}
+		{% endfor %}
+
+		Telescope observability (optional, will omit planets never observable during the specified epoch):
+		{% for prop in location_properties %}
+			{{ form[prop] }}
+            {% for error in form[prop].errors %}
+			<span class="error">[{{ error }}]</span>
+			{% endfor %}
+		{% endfor %}
+
+		{{ form.submit() }}
+	</form>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+<!--About section-->
+
+{% block about %}
+	<div>
+		<table>
+			<tbody>
+				<tr class="about">
+					<td>
+						<p>
+							This website presents the results of an MPhys project undertaken at the University of Manchester in 2019/2020 by <a href="mailto:samuel.frost@student.manchester.ac.uk">Sam Frost</a> and <a href="mailto:james.berezowski@student.manchester.ac.uk">James Berezowski</a>, supervised by <a href="http://www.jb.man.ac.uk/~ekerins/current.html">Dr. Eamonn Kerins</a>.
+						</p>
+						<p>
+							Hundreds to thousands of exoplanets are discovered every year, and many deserve further observations for study. However, previous observations of this sort were chosen by hand. It is now clear with the increasing numbers of planets being found that a way of automating this process must be developed. The team at <a href="http://www.spearnet-team.org" target="_blank">SPEARNET</a> have developed a <a href="https://arxiv.org/abs/1802.05645" target="_blank">decision metric </a> based on the signal-to-noise ratio for a given planet observation. We have validated assumptions made by this metric and suggested improvements, including use of a new mass-radius relation shown below, and have produced ranked tables with metrics calculated from the <a href="http://www.exoplanet.eu" target="_blank">exoplanet.eu</a> archive, colour coded by detection method. Planets which do not have enough data to calculate a metric for are omitted from these tables. Images are provided by <a href="https://archive.eso.org/dss/dss" target="_blank">ESO Online Digitized Sky Survey</a>.
+						</p>
+						<p>
+							These metrics are calculated with a default list of telescopes. However, there is an option to submit details for your own telescope. In this case the website will return a modified list of planets observable with your telescope only, again ranked by metric order.
+						</p>
+						<p>
+							MORE INFO TO COME HERE
+						</p>
+					</td>
+					<td>
+						<p>
+							{{ legend|safe }}
+						</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<table>
+			<tbody>
+				<tr class="about">
+					<td class="shrink">
+						<img src="{{ url_for('static', filename = 'mass_radius.png') }}" alt="mass_radius_plot"/>
+					</td>
+					<td class="shrink">
+						<img src="{{ url_for('static', filename = 'old_new_metrics.png') }}" alt="old_new_metrics_plot"/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

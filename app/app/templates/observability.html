@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block tableScripts %}
+    <!--sortable script from https://kryogenx.org/code/browser/sorttable/-->
+    <script src="{{ url_for('static', filename = 'sorttable.js') }}" type="text/javascript"></script>
+
+    <!--search bar script from https://webdevtrick.com/javascript-table-filter/-->
+    <script src="{{ url_for('static', filename = 'search.js') }}" type="text/javascript"></script>
+
+    <!--script for lazy image loading-->
+    <script src="{{ url_for('static', filename = 'lazysizes.min.js') }}" type="text/javascript"></script>
+
+    <!--scripts for ra/dec display and rounding-->
+    <script src="{{ url_for('static', filename = 'displayfunctions.js') }}" type="text/javascript"></script>
+
+    <!--scripts for loading progress bar (for slow observability calculations)-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js" type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js" type="text/javascript"></script>
+
+    <!--script needed for bokeh plot to load-->
+    <script src="http://cdn.pydata.org/bokeh/release/bokeh-2.0.0.min.js" type="text/javascript"></script>
+
+    <!--script to call to server and slowly render table when performing slow observability calculations-->
+    <script>
+        function start_long_task() {
+            // add task status elements
+            div = $('<div class="progress"><div></div><div>0%</div><div></div><div><input class="light-table-filter" type="text" id="searchBar" data-table="search" placeholder="Search table..." /></div><div>Pending...</div></div><hr>');
+            $('#progress').append(div);
+
+            // create a progress bar
+            var nanobar = new Nanobar({
+                bg: 'steelblue',
+                target: div[0].childNodes[2]
+            });
+
+            // start calls to server
+            update_progress('/status/{{ task_id }}', nanobar, div[0]);
+        }
+        function update_progress(status_url, nanobar, status_div) {
+            // send GET request to status URL
+            $.getJSON(status_url, function(data) {
+                // update UI
+                percent = parseInt(data['current'] * 100 / data['total']);
+                nanobar.go(percent);
+                $(status_div.childNodes[1]).text(percent + '%');
+
+                if (data['state'] == 'PROGRESS' || data['finished'] == 'y') {
+                    // update graph
+                    $(status_div.childNodes[0]).html(data['graph']);
+
+                    // add searchbar DOESN'T WORK JUST LIKE SORTABLE DOESN'T WORK
+                    // $(status_div.childNodes[3]).html('<input class="light-table-filter" type="text" id="searchBar" data-table="search" placeholder="Search table..." />');
+                    
+                    // create variables
+                    var exoplanet_array = JSON.parse(data['exoplanet_array']);
+                    var property_list = {{ print_properties|safe }};
+
+                    // write table (childNode[4])
+                    var table = `
+                    <table class="fixed_header search sortable" id="planetTable">
+    				
+    					<thead>
+    						<tr>
+    							<th class="shrink" title="Image from ESO database">Image</th>`;
+    						for (var j in property_list) {
+    							var property = property_list[j]
+    							table += `
+    							<th title="${ property[1] }">${ capitalize(property[0].replace('_', ' ')) }</th>`;
+    							};
+    						table += `
+    						</tr>
+    					</thead>
+
+    					<tbody>`;
+    	                for (var i in exoplanet_array) {
+    	                	var planet = exoplanet_array[i];
+    	                	table += `
+        					<tr class="${ planet.detection_type.replace(' ', '').replace(',', '').replace('"', '') }">
+    	    					<td class="shrink">
+    								<a href="${ ra_dec_img_url(planet.host_ra, planet.host_dec) }">
+                                        <img data-src="{{ url_for('static', filename='') }}${ planet.name.replace(/ /g, '_').replace(/\//g, '_') }.gif"
+        									alt="${ planet.name }"
+        									class="lazyload"/>
+                                    </a>
+    							</td>`;
+    					for (var j in property_list) {
+    						var property = property_list[j][0];
+                            // name hyperlinked
+                            if (property == 'name') {
+                                table += `
+                                <td class="centeralign"><a href="http://www.exoplanet.eu/catalog/${ planet.name.replace(' ', '_') }/">${ planet.name }</a></td>`;
+                            }
+                            // ra and dec displayed properly
+                            else if (property == 'ra') {
+                                table += `
+                                <td class="centeralign">${ deg_to_ra_hms(planet.host_ra, delim = ':', round_seconds = true) }</td>`;
+                            }
+                            else if (property == 'dec') {
+                                table += `
+                                <td class="centeralign">${ deg_to_dec_dms(planet.host_dec, delim = ':', round_seconds = true) }</td>`;
+                            }
+                            // decision metric unrounded
+                            else if (property == 'decision_metric') {
+                                table += `
+                                <td class="rightalign">${ planet.decision_metric }</td>`;
+                            }
+                            // filter and planet status centred
+                            else if (property == 'filter' || property == 'planet_status') {
+                                table += `
+                                <td class="centeralign">${ capitalize(planet[property]) }</td>`;
+                            }
+                            // all other properties right alligned and rounded to 4sf
+                            else {
+        						table += `
+        						<td class="rightalign">${ round_sig_figs(planet[property], 4) }</td>`;
+        					}  
+                        };
+        					table += `
+        					</tr>`;
+    	                };
+    	                table += `
+                    	</tbody>
+        			</table>`;
+                    $(status_div.childNodes[4]).html(table);
+                };
+                
+                // rerun every second until completion
+                if (data['finished'] == 'n') {
+                    setTimeout(function() {
+                        update_progress(status_url, nanobar, status_div);
+                    }, 1000);
+                } else {
+                    var message = `${ data['removed'] } of ${ data['total'] } planets removed`;
+                    $(status_div.childNodes[1]).text(message);
+                }
+            });
+        };
+        
+        $(function() { $(start_long_task); });
+    </script>
+{% endblock %}
+
+{% block table %}
+    Custom Telescope:
+        {% for value in flash %}
+        <p class="indent">{{ value|replace('_', ' ')|capitalize() }}</p>
+        {% endfor %}
+
+    <!-- <input class="light-table-filter" type="text" id="searchBar" data-table="search" placeholder="Search table..."> -->
+
+    <!--progress bar, graph, table and searchbar all here-->
+    <div id="progress"></div>
+
+{% endblock %}

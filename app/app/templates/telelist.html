@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+<!--List default telescopes-->
+
+<!--table scripts block-->
+{% block tableScripts %}
+	<!--sortable script from https://kryogenx.org/code/browser/sorttable/-->
+	<script src="{{ url_for('static', filename = 'sorttable.js') }}" type="text/javascript"></script>
+
+	<!--search bar script from https://webdevtrick.com/javascript-table-filter/-->
+	<script src="{{ url_for('static', filename = 'search.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+<!--table block-->
+{% block table %}
+	<!--search bar-->
+	<input class="light-table-filter" type="text" id="searchBar" data-table="search" placeholder="Search table...">
+
+	<!--table-->
+	<table class="fixed_header search sortable" id="telescopeTable">
+	
+		<!--first row headers-->
+		<thead>
+			<tr>
+				{% for property in tele_properties %}
+				<th class="centeralign">{{ property|replace('_', ' ')|capitalize() }}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+			
+		<!--table body-->
+		<tbody>
+		<!--for loops to produce rest of table-->
+			{% for telescope in tele_array %}
+			<tr>
+				{% for property in tele_properties %}
+					{% if property == 'name' %}
+					<td class="leftalign">{{ telescope[property] }}</td>
+					{% else %}
+					<td class="rightalign">{{ telescope[property] }}</td>
+					{% endif %}
+				{% endfor %}
+			</tr>
+			{% endfor %}
+		</tbody>
+		
+	</table>
+	
+{% endblock %}

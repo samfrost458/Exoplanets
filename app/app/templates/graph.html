@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+<!--Graph plotter-->
+
+{% block graph %}
+	<!--graph forms-->
+	<form action="" method="post" novalidate>
+		{{ form.hidden_tag() }}
+		
+		<div class="centeralign">
+			Select axis properties<br>
+
+			<!--x properties-->
+			x1 {{ form.xproperty1() }}
+			Log scale{{ form.xlogscale1() }}
+			Errorbars{{ form.showxerr1() }}
+			Histogram{{ form.xhist1() }}
+
+			, x2 {{ form.xproperty2() }}
+			Log scale{{ form.xlogscale2() }}
+			Errorbars{{ form.showxerr2() }}
+			Histogram{{ form.xhist2() }}
+			<br>
+
+			<!--y properties-->
+			y1 {{ form.yproperty1() }}
+			Log scale{{ form.ylogscale1() }}
+			Errorbars{{ form.showyerr1() }}
+			Histogram{{ form.yhist1() }}
+
+			, y2 {{ form.yproperty2() }}
+			Log scale{{ form.ylogscale2() }}
+			Errorbars{{ form.showyerr2() }}
+			Histogram{{ form.yhist2() }}
+			<br>
+
+			<!--colour properties-->
+			colour1 {{ form.cproperty1() }}
+			Log scale{{ form.clogscale1() }}
+
+			, colour2 {{ form.cproperty2() }}
+			Log scale{{ form.clogscale2() }}
+			<br>
+
+			<!--size properties-->
+			size1 {{ form.sproperty1() }}
+			Log scale{{ form.slogscale1() }}
+
+			, size2 {{ form.sproperty2() }}
+			Log scale{{ form.slogscale2() }}
+			<br>
+			
+			{{ form.submit() }}
+		</div>
+	</form>
+
+	<!--graph itself-->
+	{{ graph|safe }}
+{% endblock %}
