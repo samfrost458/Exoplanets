@@ -2,45 +2,12 @@
 ## A Master's project for The University of Manchester in 2019/2020, automating the selection of already-discovered exoplanets for follow-up observations
 
 ### Setup
-#### Easy mode
 In a terminal window:
 ```
 cd /path/to/app  # OUTER folder, containing run.command
 bash run.command # must write here; double-clicking the file does not seem to work
 ```
 This (should) do everything from creating a venv and downloading all the packages to starting each subshell process. They will keep going in the background, so if they need to be stopped, double-click on stop.command
-
-If it doesn't work then...
-#### Manual mode
-First check all the packages in the venv are version specific:
-```
-cd path/to/app/app # INNER folder called app, containing routes.py
-python3 -m venv venv   		
-source venv/bin/activate
-pip install -r requirements.txt
-```
-Following this, open three separate terminal tabs:
-###### Terminal 1
-```
-cd path/to/app/app
-source venv/bin/activate
-./run-redis.sh
-```
-###### Terminal 2
-```
-cd path/to/app/app
-source venv/bin/activate
-cd ..
-celery worker -A app.routes.celery --loglevel=info
-```
-###### Terminal 3
-```
-cd path/to/app/app
-source venv/bin/activate
-cd ..
-FLASK_ENV=development
-flask run
-```
 
 #### Upon success
 Once the message
